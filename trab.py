@@ -26,9 +26,7 @@ if not dataset_path.exists():
 print(f"\n>>> Carregando dataset: {dataset_path.name}\n")
 df = pd.read_csv(dataset_path)
 
-# ============================================================================ #
 # Pergunta 1 – Estatística Descritiva
-# ============================================================================ #
 print("#" * 70)
 print("Pergunta 1 – Estatística Descritiva (apenas numéricas)\n")
 print(df.describe().T, "\n")
@@ -36,17 +34,13 @@ print(df.describe().T, "\n")
 print("Pergunta 1 – Estatística Descritiva (inclui categóricas)\n")
 print(df.describe(include="all").T)
 
-# ============================================================================ #
 # Limpeza básica
-# ============================================================================ #
 antes = len(df)
 df = df.dropna()
 depois = len(df)
 print(f"\nLinhas antes de dropna: {antes} — após: {depois}\n")
 
-# ============================================================================ #
 # Pergunta 2 – Tratamento das Variáveis Categóricas
-# ============================================================================ #
 cat_cols = [c for c in [
     "sistema_operacional",
     "tipo_hd",
@@ -71,23 +65,19 @@ if cat_cols:
 else:
     X = df_num.copy()
 
-X = sm.add_constant(X, has_constant="add").astype(float)      # constante
+X = sm.add_constant(X, has_constant="add").astype(float)
 Y = df["tempo_resposta"].astype(float)
 
 # Checagem final de tipo
 assert not X.dtypes.eq("object").any(), "Ainda existem colunas object em X!"
 
-# ============================================================================ #
 # Pergunta 3 – Ajuste do Modelo Completo
-# ============================================================================ #
 print("#" * 70)
 print("Pergunta 3 – Resumo do Modelo Completo (OLS)\n")
 modelo_full = sm.OLS(Y, X).fit()
 print(modelo_full.summary())
 
-# ============================================================================ #
 # Pergunta 4A – Diagnóstico de Multicolinearidade
-# ============================================================================ #
 print("#" * 70)
 print("Pergunta 4A – Fatores de Inflação da Variância (VIF)\n")
 vif_df = pd.DataFrame({
@@ -96,9 +86,7 @@ vif_df = pd.DataFrame({
 }).sort_values(by="VIF", ascending=False)
 print(vif_df, "\n")
 
-# ============================================================================ #
 # Pergunta 4B – Diagnóstico de Heterocedasticidade
-# ============================================================================ #
 print("#" * 70)
 print("Pergunta 4B – Teste Breusch-Pagan\n")
 labels = ["LM Stat", "LM p-valor", "F Stat", "F p-valor"]
@@ -124,9 +112,7 @@ def plot_residuos(model):
 
     plot_residuos(modelo_full)
 
-# ============================================================================ #
 # Pergunta 5 – Comparação de Modelos (Backward Elimination)
-# ============================================================================ #
 def backward_elimination(X_, y, thresh=0.05):
     cols = list(X_.columns)
     while True:
@@ -156,9 +142,7 @@ anova_res = sm.stats.anova_lm(modelo_step, modelo_full)
 print(f"{'Teste F (p-valor)':<20}  {anova_res['Pr(>F)'][1]:8.3f}\n")
 print(f"Variáveis mantidas no Modelo 2: {', '.join(sel_cols)}\n")
 
-# ============================================================================ #
 # Pergunta 6 – Recomendações Práticas
-# ============================================================================ #
 print("#" * 70)
 print("Pergunta 6 – Recomendações Práticas\n")
 print(textwrap.dedent("""
